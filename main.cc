@@ -13,6 +13,6 @@ int main(int argc, char **argv) {
   // std::string output = argv[2];
 
   Parser parse(input);
-  parse.parser_read_file();
+  parse.parse_read_file();
   return 0;
 }
