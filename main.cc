@@ -1,5 +1,6 @@
 #include "includes/parser.h"
 #include "spdlog/spdlog.h"
+#include <fmt/base.h>
 #include <string>
 
 int main(int argc, char **argv) {
@@ -10,7 +11,7 @@ int main(int argc, char **argv) {
   }
 
   std::string input = argv[1];
-  // std::string output = argv[2];
+  std::string output = argv[2];
 
   Parser parse(input);
   parse.parse_read_file();
