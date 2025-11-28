@@ -5,4 +5,7 @@ TEST(Parser, ParserInstructions) {
   EXPECT_EQ(Parser::parse_instruction("push segment 1 // Hello World"),
             "push segment 1");
   EXPECT_EQ(Parser::parse_instruction("  pop temp 2 "), "pop temp 2");
+  EXPECT_EQ(Parser::parse_instruction("add //book "), "add");
+
+  EXPECT_EQ(Parser::parse_instruction("   lt   "), "lt");
 };

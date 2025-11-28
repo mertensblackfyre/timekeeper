@@ -2,15 +2,15 @@
 
 #include "helper.h"
 #include "spdlog/spdlog.h"
+#include <algorithm>
 #include <array>
 #include <fmt/base.h>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <string_view>
-#include <variant>
+#include <utility>
 #include <vector>
-#include <algorithm>
 
 struct ParserMemory {
   std::string value{};
@@ -22,11 +22,13 @@ class Parser {
 private:
   std::string line;
   std::ifstream input_file;
-  std::array<std::string_view, 9> logical_commands = {
+  constexpr static std::array<std::string_view, 9> logical_commands = {
       "add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not"};
 
 public:
-  std::vector<std::variant<std::string_view, ParserMemory>> commands;
+  // 0 for memory commands
+  // 1 for logical commands
+  std::vector<std::pair<int, std::string>> commands;
   Parser(const std::string &file_name) {
     input_file.open(file_name);
     if (!input_file.is_open())
@@ -45,13 +47,14 @@ public:
 
 void Parser::parse_read_file() {
   while (std::getline(input_file, line)) {
-    std::string ll = parse_instruction(line);
-    auto it = std::find(logical_commands.begin(), logical_commands.end(), std::to_string_view(ll));
+    std::string ll = line;
     if (helper_get_first_word(ll) == "push" ||
         helper_get_first_word(ll) == "pop") {
-      commands.emplace_back(parse_memory_commands(ll));
-    } else if (it != std::end(logical_commands)) {
-      commands.emplace_back(ll);
+      std::pair<int, std::string> w = {0, ll};
+      commands.emplace_back(w);
+    } else {
+      std::pair<int, std::string> w = {1, ll};
+      commands.emplace_back(w);
     }
   };
 };
