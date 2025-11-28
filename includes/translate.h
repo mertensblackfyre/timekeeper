@@ -14,15 +14,20 @@
 class Translator {
   std::ifstream output_file;
 
+public:
   Translator(const std::string &file_name) {
     output_file.open(file_name);
     if (!output_file.is_open())
       spdlog::error("Error opening file");
   }
 
-  std::string translate_memory_commands(std::string command);
+  inline void translate_memory_commands(std::string command);
   ~Translator() {
     if (output_file.is_open())
       output_file.close();
   };
+};
+
+void Translator::translate_memory_commands(std::string command) {
+
 };

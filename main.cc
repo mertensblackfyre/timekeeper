@@ -1,4 +1,5 @@
 #include "includes/parser.h"
+#include "includes/translate.h"
 #include "spdlog/spdlog.h"
 #include <fmt/base.h>
 #include <string>
@@ -12,13 +13,15 @@ int main(int argc, char **argv) {
 
   std::string input = argv[1];
   std::string output = argv[2];
-  Parser parse(input);
-  parse.parse_read_file();
-  for (std::string ll : parse.commands) {
-    if (helper_get_first_word(ll) == "push" ||
-        helper_get_first_word(ll) == "pop") {
 
-    
+
+  Parser parse(input);
+  Translator translator(output);
+  parse.parse_read_file();
+
+  for (auto ll : parse.commands) {
+    if (ll.first == 0) {
+      ParserMemory p = parse.parse_memory_commands(ll.second);
     }
   };
   return 0;
