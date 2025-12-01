@@ -49,7 +49,7 @@ public:
 
 void Parser::parse_read_file() {
   while (std::getline(input_file, line)) {
-    std::string ll = line;
+    std::string ll = parse_instruction(line);
     if (helper_get_first_word(ll) == "push" ||
         helper_get_first_word(ll) == "pop") {
       std::pair<int, std::string> w = {MEMORY, ll};
@@ -62,40 +62,23 @@ void Parser::parse_read_file() {
 };
 
 std::string Parser::parse_instruction(std::string_view line) {
-  std::string parsed_string = "";
-  int p = 0;
 
-  while (std::isspace(line[p])) {
-    p++;
-  };
-  /*
-    while (p != line.size()) {
-      char ch = line[p++];
-      if (ch == '/')
-        break;
-      if (!std::isspace(ch) && ch != '/') {
-        parsed_string += ch;
-      } else {
-        if (p + 1 == line.size()) {
-          break;
-        } else {
+  std::string parsed_string(line);
+  size_t backslash = line.find("//");
 
-          parsed_string += " ";
-        }
-      }
-    };
-  */
-  while (p != line.size()) {
-    char ch = line[p++];
-    if (ch == '/')
-      break;
-    while (!std::isspace(ch) && ch != '/') {
-      parsed_string += ch;
-    };
+  if (backslash != std::string::npos)
+    parsed_string = parsed_string.substr(0, backslash);
 
-    parsed_string += " ";
-  };
-  fmt::println("{}", parsed_string);
+  parsed_string.erase(
+      parsed_string.begin(),
+      std::find_if(parsed_string.begin(), parsed_string.end(),
+                   [](unsigned char ch) { return !std::isspace(ch); }));
+
+  parsed_string.erase(
+      std::find_if(parsed_string.rbegin(), parsed_string.rend(),
+                   [](unsigned char ch) { return !std::isspace(ch); })
+          .base(),
+      parsed_string.end());
 
   return parsed_string;
 };

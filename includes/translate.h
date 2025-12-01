@@ -61,9 +61,10 @@ void Translator::translate_memory_commands(ParserMemory command) {
   translate_append_file(value_asm);
 
   // Handle destination
-  std::string dest_asm = memory_commands_reference["dest"];
-  translate_append_file(dest_asm);
-
+  if (command.destination == "command") {
+    std::string dest_asm = memory_commands_reference["dest"];
+    translate_append_file(dest_asm);
+  };
   // Handle command
   std::string cmd_asm = memory_commands_reference[command.command];
   translate_append_file(cmd_asm);
