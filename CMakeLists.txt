@@ -20,11 +20,11 @@ target_link_libraries(hvm_lib PUBLIC fmt::fmt spdlog::spdlog)
 enable_testing()
 find_package(GTest REQUIRED)
 
-add_executable(hvm_tests tests/test_parser.cc # tests/test_translate.cc
+add_executable(
+  hvm_tests tests/test_parser.cc tests/test_helper.cc # tests/test_translate.cc
 )
 
-target_link_libraries(hvm_tests PRIVATE hvm_lib GTest::gtest
-                                         GTest::gtest_main)
+target_link_libraries(hvm_tests PRIVATE hvm_lib GTest::gtest GTest::gtest_main)
 
 # ---- Executable ----
 add_executable(hvm main.cc)

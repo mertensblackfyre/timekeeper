@@ -14,15 +14,15 @@ int main(int argc, char **argv) {
   std::string input = argv[1];
   std::string output = argv[2];
 
-
   Parser parse(input);
   Translator translator(output);
   parse.parse_read_file();
 
   for (auto ll : parse.commands) {
-    if (ll.first == 0) {
+    if (ll.first == MEMORY) {
       ParserMemory p = parse.parse_memory_commands(ll.second);
-    }
+      translator.translate_memory_commands(p);
+    };
   };
   return 0;
 }
