@@ -59,10 +59,9 @@ public:
       spdlog::error("Error opening file");
   }
 
+  inline void translate_append_file(std::string_view line);
   inline void translate_memory_commands(ParserMemory command,
                                         const std::string &fname);
-
-  inline void translate_append_file(std::string_view line);
 
   ~Translator() {
     if (output_file.is_open())
@@ -70,11 +69,14 @@ public:
   };
 
 private:
+  // Helpers
   inline std::string translate_handle_stack(const std::string &command);
   inline std::string translate_handle_value(const std::string &value);
   inline std::string
   translate_handle_destination(const std::string &destination);
 
+  // Memory Segments
+  inline std::string translate_handle_constant(const std::string &value);
   inline std::string translate_handle_locals(const std::string &destination,
                                              const std::string &value,
                                              const std::string &command);
@@ -82,13 +84,13 @@ private:
                                              const std::string &value,
                                              const std::string &command);
 
-  inline std::string translate_handle_constant(const std::string &value);
-
   inline std::string translate_handle_temp(const std::string &value,
                                            const std::string &command);
 
   inline std::string translate_handle_pointer(const std::string &value,
                                               const std::string &command);
+
+  // Logical
 };
 
 void Translator::translate_append_file(std::string_view line) {
@@ -165,24 +167,41 @@ std::string Translator::translate_handle_temp(const std::string &value,
   return asm_index + asm_temp + asm_op;
 };
 
-inline std::string translate_handle_pointer(const std::string &value,
-                                            const std::string &command) {
+std::string Translator::translate_handle_pointer(const std::string &value,
+                                                 const std::string &command) {
 
-  if () {
+  if (command == "push" && value == "0") {
+    std::string asm_index = memory_commands_reference["0_push"];
+    std::string asm_stack = memory_commands_reference["stack"];
+    std::string asm_op = memory_commands_reference["push"];
+    return asm_index + asm_stack + asm_op;
   }
+  if (command == "push" && value == "1") {
+    std::string asm_index = memory_commands_reference["1_push"];
+    std::string asm_stack = memory_commands_reference["stack"];
+    std::string asm_op = memory_commands_reference["push"];
+    return asm_index + asm_stack + asm_op;
+  }
+
+  if (command == "pop" && value == "0") {
+    std::string asm_op = memory_commands_reference["pop"];
+    std::string asm_index = memory_commands_reference["0_pop"];
+    return asm_op + asm_index;
+  }
+
+  if (command == "pop" && value == "1") {
+    std::string asm_op = memory_commands_reference["pop"];
+    std::string asm_index = memory_commands_reference["1_pop"];
+    return asm_op + asm_index;
+  }
+
   return "";
 };
 void Translator::translate_memory_commands(ParserMemory command,
                                            const std::string &fname) {
 
-  // Add comment
   std::string comment = fmt::format("// {} {} {} \n", command.command,
                                     command.destination, command.value);
-
-  print("{} ", command.command);
-  print("{} ", command.destination);
-  println("{}", command.value);
-
   std::string final_asm = "";
   if (command.destination == "local" || command.destination == "that" ||
       command.destination == "this" || command.destination == "argument") {
@@ -199,6 +218,7 @@ void Translator::translate_memory_commands(ParserMemory command,
   } else if (command.destination == "temp") {
     final_asm += translate_handle_temp(command.value, command.command);
   } else {
+    final_asm += translate_handle_pointer(command.value, command.command);
   }
 
   translate_append_file(comment);
